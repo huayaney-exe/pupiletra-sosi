@@ -7,7 +7,7 @@ class PupiletraGame {
         this.gridRows = 12;
         this.gridSize = 12; // For legacy compatibility
         this.targetWords = [
-            'SCOTIA', 'PERU', 'BANCO', 'CLIENTE', 'INTEGRIDAD', 'TORONTO'
+            'SCOTIA', 'PERU', 'BANCO', 'CLIENTE', 'INTEGRIDAD', 'TORONTO', 'FUTURO'
         ];
 
         this.grid = [];
@@ -15,12 +15,13 @@ class PupiletraGame {
         this.foundWords = new Set();
         this.foundCells = new Map(); // Map: "row,col" -> Set of found words at that position
         this.selectedCells = [];
-        this.timeRemaining = 90;
+        this.timeRemaining = 70;
         this.isGameActive = false;
         this.timerInterval = null;
         this.hintsUsed = 0;
         this.maxHints = 3;
         this.score = 0;
+        this.checkWordTimeout = null; // Debounce timer for word checking
 
         this.storageManager = new StorageManager();
 
@@ -112,7 +113,7 @@ class PupiletraGame {
         this.foundWords.clear();
         this.foundCells.clear();
         this.selectedCells = [];
-        this.timeRemaining = 90;
+        this.timeRemaining = 70;
         this.isGameActive = true;
         this.hintsUsed = 0;
         this.score = 0;
@@ -270,13 +271,28 @@ class PupiletraGame {
             return;
         }
 
+        // Check if cell already selected (prevent duplicates)
+        const alreadySelected = this.selectedCells.some(([r, c]) => r === row && c === col);
+        if (alreadySelected) {
+            return; // User clicked same cell, ignore
+        }
+
         // Add to selection
         this.selectedCells.push([row, col]);
         this.updateGridDisplay();
 
-        // Check for word if selection is long enough
+        // Debounced word check: wait 150ms after last click to allow rapid selection
         if (this.selectedCells.length >= 4) {
-            this.checkWord();
+            // Cancel previous check
+            if (this.checkWordTimeout) {
+                clearTimeout(this.checkWordTimeout);
+            }
+
+            // Schedule check after user stops clicking
+            this.checkWordTimeout = setTimeout(() => {
+                this.checkWord();
+                this.checkWordTimeout = null;
+            }, 150);
         }
     }
 
@@ -446,7 +462,7 @@ class PupiletraGame {
         this.foundWords.clear();
         this.foundCells.clear();
         this.selectedCells = [];
-        this.timeRemaining = 90;
+        this.timeRemaining = 70;
         this.hintsUsed = 0;
         this.elements.controlBtn.textContent = 'INICIAR JUEGO';
         this.elements.hintSection.style.display = 'none';

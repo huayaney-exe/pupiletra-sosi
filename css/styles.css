@@ -255,7 +255,7 @@ body {
     font-size: 18px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.1s ease;
     user-select: none;
     box-shadow: var(--shadow-sm);
 }
