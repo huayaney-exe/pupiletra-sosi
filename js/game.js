@@ -13,7 +13,7 @@ class PupiletraGame {
         this.grid = [];
         this.wordPositions = {}; // Store positions for each word
         this.foundWords = new Set();
-        this.foundCells = new Set();
+        this.foundCells = new Map(); // Map: "row,col" -> Set of found words at that position
         this.selectedCells = [];
         this.timeRemaining = 90;
         this.isGameActive = false;
@@ -224,13 +224,35 @@ class PupiletraGame {
         });
     }
 
+    getCellWords(row, col) {
+        // Returns array of words that pass through this cell position
+        const wordsAtCell = [];
+
+        for (const [word, data] of Object.entries(this.wordPositions)) {
+            const positions = data.positions;
+            if (positions.some(([r, c]) => r === row && c === col)) {
+                wordsAtCell.push(word);
+            }
+        }
+
+        return wordsAtCell;
+    }
+
     selectCell(row, col) {
         if (!this.isGameActive) return;
 
         const cellKey = `${row},${col}`;
 
-        // Check if already found
-        if (this.foundCells.has(cellKey)) return;
+        // Check if ALL words at this cell have been found
+        // Allow selection if there are still unfound words passing through this cell
+        if (this.foundCells.has(cellKey)) {
+            const wordsAtCell = this.getCellWords(row, col);
+            const foundWordsAtCell = this.foundCells.get(cellKey);
+
+            // If all words at this position are found, block selection
+            const allWordsFound = wordsAtCell.every(word => foundWordsAtCell.has(word));
+            if (allWordsFound) return;
+        }
 
         // If this is the first cell, just select it
         if (this.selectedCells.length === 0) {
@@ -275,9 +297,17 @@ class PupiletraGame {
     foundWord(word) {
         this.foundWords.add(word);
 
-        // Add selected cells to found cells
+        // Track which word was found at each cell position
         this.selectedCells.forEach(([r, c]) => {
-            this.foundCells.add(`${r},${c}`);
+            const cellKey = `${r},${c}`;
+
+            // Initialize Set if this is the first word found at this cell
+            if (!this.foundCells.has(cellKey)) {
+                this.foundCells.set(cellKey, new Set());
+            }
+
+            // Add this word to the set of found words at this cell
+            this.foundCells.get(cellKey).add(word);
         });
 
         this.selectedCells = [];
