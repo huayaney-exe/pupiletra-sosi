@@ -1,13 +1,17 @@
-/* Scotiabank Brand Colors */
+/* Scotiabank Brand Colors - Material Design */
 :root {
     --scotiabank-red: #D4002A;
     --scotiabank-red-dark: #B80024;
-    --scotiabank-gold: #FFD700;
     --scotiabank-white: #FFFFFF;
-    --scotiabank-black: #000000;
+    --scotiabank-gray: #E0E0E0;
+    --scotiabank-gray-light: #F5F5F5;
+    --scotiabank-gray-dark: #424242;
     --game-success: #4CAF50;
     --game-warning: #FF9800;
     --game-error: #F44336;
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+    --shadow-md: 0 4px 8px rgba(0,0,0,0.15);
+    --shadow-lg: 0 8px 16px rgba(0,0,0,0.2);
 }
 
 * {
@@ -17,21 +21,45 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
     min-height: 100vh;
-    background: linear-gradient(135deg, var(--scotiabank-red) 0%, var(--scotiabank-red-dark) 50%, var(--scotiabank-black) 100%);
+    min-height: 100dvh;
+    background: linear-gradient(135deg, var(--scotiabank-gray-light) 0%, var(--scotiabank-white) 100%);
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 20px;
+    overflow: auto;
 }
 
 .game-container {
     width: 100%;
     max-width: 900px;
-    background: rgba(0, 0, 0, 0.1);
-    padding: 24px;
+    max-height: calc(100vh - 40px);
+    max-height: calc(100dvh - 40px);
+    overflow-y: auto;
+    background: var(--scotiabank-white);
+    padding: 32px;
     border-radius: 16px;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Logo */
+.logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--scotiabank-gray);
+}
+
+.scotiabank-logo {
+    height: 60px;
+    width: auto;
+    object-fit: contain;
 }
 
 /* Header */
@@ -43,10 +71,10 @@ body {
 }
 
 .game-title {
-    color: var(--scotiabank-gold);
-    font-size: 28px;
-    font-weight: bold;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    color: var(--scotiabank-red);
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: 2px;
 }
 
 .header-controls {
@@ -56,17 +84,18 @@ body {
 }
 
 .timer-display {
-    background: rgba(0, 0, 0, 0.7);
+    background: var(--scotiabank-gray-light);
     padding: 12px 24px;
     border-radius: 8px;
     min-width: 100px;
     text-align: center;
+    box-shadow: var(--shadow-sm);
 }
 
 #timer-value {
-    color: var(--scotiabank-gold);
+    color: var(--scotiabank-gray-dark);
     font-size: 24px;
-    font-weight: bold;
+    font-weight: 700;
 }
 
 .timer-display.warning #timer-value {
@@ -78,52 +107,61 @@ body {
 }
 
 .ranking-button {
-    background: var(--scotiabank-gold);
+    background: var(--scotiabank-red);
+    color: var(--scotiabank-white);
     border: none;
     width: 50px;
     height: 50px;
-    border-radius: 8px;
+    border-radius: 50%;
     font-size: 24px;
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-md);
 }
 
 .ranking-button:hover {
-    transform: scale(1.05);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
 }
 
 /* Word List */
 .word-list-container {
-    background: rgba(0, 0, 0, 0.8);
-    padding: 16px;
-    border-radius: 8px;
-    margin-bottom: 16px;
-    min-height: 120px;
+    background: var(--scotiabank-gray-light);
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    min-height: 100px;
+    box-shadow: var(--shadow-sm);
 }
 
 .word-list-title {
-    color: var(--scotiabank-white);
+    color: var(--scotiabank-gray-dark);
     font-size: 16px;
-    margin-bottom: 8px;
+    font-weight: 600;
+    margin-bottom: 12px;
 }
 
 .word-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 12px;
 }
 
 .word-item {
-    color: var(--scotiabank-white);
+    color: var(--scotiabank-gray-dark);
     font-size: 14px;
-    padding: 4px 8px;
-    border-radius: 4px;
-    background: rgba(255, 255, 255, 0.1);
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 20px;
+    background: var(--scotiabank-white);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
 }
 
 .word-item.found {
-    color: var(--game-success);
-    font-weight: bold;
+    color: var(--scotiabank-white);
+    background: var(--game-success);
+    font-weight: 600;
 }
 
 .word-item.found::before {
@@ -174,7 +212,7 @@ body {
 }
 
 .hint-message {
-    background: var(--scotiabank-gold);
+    background: var(--scotiabank-white);
     color: var(--scotiabank-black);
     padding: 12px;
     border-radius: 8px;
@@ -190,46 +228,54 @@ body {
     display: flex;
     justify-content: center;
     margin-bottom: 20px;
+    flex-shrink: 0;
 }
 
 .grid {
     display: inline-grid;
-    grid-template-columns: repeat(15, 44px);
-    grid-template-rows: repeat(15, 44px);
-    gap: 2px;
-    background: rgba(0, 0, 0, 0.7);
-    padding: 8px;
-    border-radius: 8px;
+    grid-template-columns: repeat(10, 50px);
+    grid-template-rows: repeat(12, 50px);
+    gap: 4px;
+    background: var(--scotiabank-gray-light);
+    padding: 12px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
 }
 
 .grid-cell {
-    width: 44px;
-    height: 44px;
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 4px;
+    width: 50px;
+    height: 50px;
+    background: var(--scotiabank-white);
+    border: 2px solid var(--scotiabank-gray);
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--scotiabank-white);
-    font-size: 16px;
-    font-weight: bold;
+    color: var(--scotiabank-gray-dark);
+    font-size: 18px;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.3s ease;
     user-select: none;
+    box-shadow: var(--shadow-sm);
 }
 
 .grid-cell:hover:not(.found) {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--scotiabank-gray-light);
+    transform: scale(1.05);
+    box-shadow: var(--shadow-md);
 }
 
 .grid-cell.selected {
-    background: rgba(255, 152, 0, 0.7);
+    background: var(--game-warning);
+    color: var(--scotiabank-white);
     border-color: var(--game-warning);
+    transform: scale(1.05);
 }
 
 .grid-cell.found {
-    background: rgba(76, 175, 80, 0.7);
+    background: var(--game-success);
+    color: var(--scotiabank-white);
     border-color: var(--game-success);
 }
 
@@ -240,15 +286,22 @@ body {
     background: var(--scotiabank-red);
     color: var(--scotiabank-white);
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     font-size: 18px;
-    font-weight: bold;
+    font-weight: 700;
+    letter-spacing: 1px;
     cursor: pointer;
-    transition: opacity 0.2s;
+    transition: all 0.3s ease;
+    margin-top: auto;
+    flex-shrink: 0;
+    box-shadow: var(--shadow-md);
+    text-transform: uppercase;
 }
 
 .control-button:hover {
-    opacity: 0.9;
+    background: var(--scotiabank-red-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
 }
 
 /* Modals */
@@ -367,13 +420,13 @@ body {
 }
 
 .play-again-button {
-    background: var(--scotiabank-gold);
+    background: var(--scotiabank-white);
     color: var(--scotiabank-black);
 }
 
 .close-button {
     width: 100%;
-    background: var(--scotiabank-gold);
+    background: var(--scotiabank-white);
     color: var(--scotiabank-black);
 }
 
@@ -383,7 +436,7 @@ body {
 }
 
 .ranking-title {
-    color: var(--scotiabank-gold);
+    color: var(--scotiabank-white);
     font-size: 28px;
     margin-bottom: 20px;
     text-align: center;
@@ -406,7 +459,7 @@ body {
 }
 
 .ranking-item:nth-child(1) {
-    background: rgba(255, 215, 0, 0.3);
+    background: rgba(255, 255, 255, 0.25);
 }
 
 .ranking-item:nth-child(2),
@@ -429,7 +482,7 @@ body {
 }
 
 .ranking-score {
-    color: var(--scotiabank-gold);
+    color: var(--scotiabank-white);
     font-size: 20px;
     font-weight: bold;
 }
@@ -452,20 +505,162 @@ body {
     to { transform: translateY(0); opacity: 1; }
 }
 
+/* Footer */
+.game-footer {
+    text-align: center;
+    padding: 16px 0 0 0;
+    margin-top: 24px;
+    border-top: 1px solid var(--scotiabank-gray);
+    flex-shrink: 0;
+}
+
+.game-footer p {
+    color: var(--scotiabank-gray-dark);
+    font-size: 12px;
+    opacity: 0.6;
+    margin: 0;
+    font-weight: 400;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    .game-container {
+        padding: 20px;
+        max-height: calc(100vh - 20px);
+        max-height: calc(100dvh - 20px);
+    }
+
+    .scotiabank-logo {
+        height: 50px;
+    }
+
+    .logo-container {
+        margin-bottom: 20px;
+        padding-bottom: 16px;
+    }
+
     .grid {
-        grid-template-columns: repeat(15, 36px);
-        grid-template-rows: repeat(15, 36px);
+        grid-template-columns: repeat(10, 38px);
+        grid-template-rows: repeat(12, 38px);
+        gap: 3px;
+        padding: 10px;
     }
 
     .grid-cell {
-        width: 36px;
-        height: 36px;
+        width: 38px;
+        height: 38px;
         font-size: 14px;
     }
 
     .game-title {
+        font-size: 26px;
+    }
+
+    .control-button {
+        font-size: 16px;
+        padding: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 5px;
+    }
+
+    .game-container {
+        padding: 16px;
+        max-height: calc(100vh - 10px);
+        max-height: calc(100dvh - 10px);
+    }
+
+    .scotiabank-logo {
+        height: 40px;
+    }
+
+    .logo-container {
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+    }
+
+    .game-header {
+        margin-bottom: 12px;
+    }
+
+    .game-title {
         font-size: 22px;
+    }
+
+    .timer-display {
+        padding: 8px 16px;
+        min-width: 80px;
+    }
+
+    #timer-value {
+        font-size: 18px;
+    }
+
+    .ranking-button {
+        width: 42px;
+        height: 42px;
+        font-size: 20px;
+    }
+
+    .word-list-container {
+        padding: 16px;
+        min-height: 90px;
+        margin-bottom: 16px;
+    }
+
+    .word-list-title {
+        font-size: 14px;
+    }
+
+    .word-item {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+
+    .grid {
+        grid-template-columns: repeat(10, 30px);
+        grid-template-rows: repeat(12, 30px);
+        gap: 2px;
+        padding: 8px;
+    }
+
+    .grid-cell {
+        width: 30px;
+        height: 30px;
+        font-size: 12px;
+    }
+
+    .control-button {
+        font-size: 14px;
+        padding: 12px;
+    }
+
+    .modal-content {
+        padding: 24px;
+        width: 95%;
+    }
+
+    .game-footer p {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 375px) {
+    .grid {
+        grid-template-columns: repeat(10, 26px);
+        grid-template-rows: repeat(12, 26px);
+    }
+
+    .grid-cell {
+        width: 26px;
+        height: 26px;
+        font-size: 11px;
     }
 }

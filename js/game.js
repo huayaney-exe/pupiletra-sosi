@@ -3,10 +3,11 @@
 
 class PupiletraGame {
     constructor() {
-        this.gridSize = 15;
+        this.gridCols = 10;
+        this.gridRows = 12;
+        this.gridSize = 12; // For legacy compatibility
         this.targetWords = [
-            'SCOTIA', 'PERU', 'BANCO', 'CLIENTE',
-            'ENFOQUE', 'INCLUSION', 'INTEGRIDAD'
+            'SCOTIA', 'PERU', 'BANCO', 'CLIENTE'
         ];
 
         this.grid = [];
@@ -124,9 +125,9 @@ class PupiletraGame {
     }
 
     generateGrid() {
-        // Initialize empty grid
-        this.grid = Array(this.gridSize).fill(null).map(() =>
-            Array(this.gridSize).fill(' ')
+        // Initialize empty grid with new dimensions
+        this.grid = Array(this.gridRows).fill(null).map(() =>
+            Array(this.gridCols).fill(' ')
         );
         this.wordPositions = {};
 
@@ -141,8 +142,8 @@ class PupiletraGame {
 
             while (!placed && attempts < maxAttempts) {
                 const direction = Math.floor(Math.random() * 3); // 0: horizontal, 1: vertical, 2: diagonal
-                const row = Math.floor(Math.random() * this.gridSize);
-                const col = Math.floor(Math.random() * this.gridSize);
+                const row = Math.floor(Math.random() * this.gridRows);
+                const col = Math.floor(Math.random() * this.gridCols);
 
                 if (this.canPlaceWord(word, row, col, direction)) {
                     this.placeWord(word, row, col, direction);
@@ -165,10 +166,10 @@ class PupiletraGame {
     canPlaceWord(word, row, col, direction) {
         const len = word.length;
 
-        // Check if word fits
-        if (direction === 0 && col + len > this.gridSize) return false;
-        if (direction === 1 && row + len > this.gridSize) return false;
-        if (direction === 2 && (row + len > this.gridSize || col + len > this.gridSize)) return false;
+        // Check if word fits with new dimensions
+        if (direction === 0 && col + len > this.gridCols) return false;
+        if (direction === 1 && row + len > this.gridRows) return false;
+        if (direction === 2 && (row + len > this.gridRows || col + len > this.gridCols)) return false;
 
         // Check if cells are empty
         for (let i = 0; i < len; i++) {
@@ -195,8 +196,8 @@ class PupiletraGame {
 
     renderGrid() {
         this.elements.grid.innerHTML = '';
-        for (let i = 0; i < this.gridSize; i++) {
-            for (let j = 0; j < this.gridSize; j++) {
+        for (let i = 0; i < this.gridRows; i++) {
+            for (let j = 0; j < this.gridCols; j++) {
                 const cell = document.createElement('div');
                 cell.className = 'grid-cell';
                 cell.textContent = this.grid[i][j];
