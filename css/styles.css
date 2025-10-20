@@ -130,8 +130,9 @@ body {
     padding: 20px;
     border-radius: 12px;
     margin-bottom: 20px;
-    min-height: 100px;
+    min-height: 80px;
     box-shadow: var(--shadow-sm);
+    overflow: hidden;
 }
 
 .word-list-title {
@@ -144,18 +145,22 @@ body {
 .word-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 10px;
+    justify-content: flex-start;
+    align-items: flex-start;
 }
 
 .word-item {
     color: var(--scotiabank-gray-dark);
     font-size: 14px;
     font-weight: 500;
-    padding: 8px 16px;
+    padding: 6px 14px;
     border-radius: 20px;
     background: var(--scotiabank-white);
     box-shadow: var(--shadow-sm);
     transition: all 0.3s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .word-item.found {
@@ -560,6 +565,20 @@ body {
         font-size: 26px;
     }
 
+    .word-list-container {
+        padding: 16px;
+        min-height: 70px;
+    }
+
+    .word-list {
+        gap: 8px;
+    }
+
+    .word-item {
+        font-size: 13px;
+        padding: 6px 12px;
+    }
+
     .control-button {
         font-size: 16px;
         padding: 14px;
@@ -610,9 +629,13 @@ body {
     }
 
     .word-list-container {
-        padding: 16px;
-        min-height: 90px;
+        padding: 14px;
+        min-height: 60px;
         margin-bottom: 16px;
+    }
+
+    .word-list {
+        gap: 6px;
     }
 
     .word-list-title {
@@ -620,8 +643,8 @@ body {
     }
 
     .word-item {
-        font-size: 12px;
-        padding: 6px 12px;
+        font-size: 11px;
+        padding: 5px 10px;
     }
 
     .grid {
@@ -653,6 +676,19 @@ body {
 }
 
 @media (max-width: 375px) {
+    .word-list-container {
+        padding: 12px;
+    }
+
+    .word-list {
+        gap: 5px;
+    }
+
+    .word-item {
+        font-size: 10px;
+        padding: 4px 8px;
+    }
+
     .grid {
         grid-template-columns: repeat(10, 26px);
         grid-template-rows: repeat(12, 26px);
