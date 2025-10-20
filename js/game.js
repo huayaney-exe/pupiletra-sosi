@@ -7,7 +7,7 @@ class PupiletraGame {
         this.gridRows = 12;
         this.gridSize = 12; // For legacy compatibility
         this.targetWords = [
-            'SCOTIA', 'PERU', 'BANCO', 'CLIENTE'
+            'SCOTIA', 'PERU', 'BANCO', 'CLIENTE', 'INTEGRIDAD', 'TORONTO'
         ];
 
         this.grid = [];
