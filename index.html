@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pupiletra Scotiabank</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <!-- Header -->
+        <header class="game-header">
+            <h1 class="game-title">PUPILETRA</h1>
+            <div class="header-controls">
+                <div class="timer-display" id="timer">
+                    <span id="timer-value">90s</span>
+                </div>
+                <button class="ranking-button" id="ranking-btn">🏆</button>
+            </div>
+        </header>
+
+        <!-- Word List -->
+        <div class="word-list-container" id="word-list-container">
+            <h3 class="word-list-title">Palabras a encontrar:</h3>
+            <div class="word-list" id="word-list"></div>
+        </div>
+
+        <!-- Hint Section -->
+        <div class="hint-section" id="hint-section" style="display: none;">
+            <div class="hint-info">
+                <span id="hints-count">Pistas: 0/3</span>
+                <button class="hint-button" id="hint-btn">💡 Pista</button>
+            </div>
+            <div class="hint-message" id="hint-message" style="display: none;"></div>
+        </div>
+
+        <!-- Grid -->
+        <div class="grid-container">
+            <div class="grid" id="game-grid"></div>
+        </div>
+
+        <!-- Control Button -->
+        <button class="control-button" id="control-btn">INICIAR JUEGO</button>
+    </div>
+
+    <!-- Result Modal -->
+    <div class="modal" id="result-modal">
+        <div class="modal-content result-modal-content">
+            <h2 id="result-title">¡Felicidades!</h2>
+            <p id="result-message"></p>
+            <p id="result-score"></p>
+            <div class="fun-fact">
+                <h4>Dato curioso:</h4>
+                <p id="result-fun-fact"></p>
+            </div>
+            <input type="text" id="player-name-input" placeholder="Tu nombre" maxlength="20">
+            <div class="modal-buttons">
+                <button class="modal-button save-button" id="save-score-btn">GUARDAR</button>
+                <button class="modal-button play-again-button" id="play-again-btn">JUGAR DE NUEVO</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ranking Modal -->
+    <div class="modal" id="ranking-modal">
+        <div class="modal-content ranking-modal-content">
+            <h2 class="ranking-title">🏆 RANKING TOP 10</h2>
+            <div class="ranking-list" id="ranking-list"></div>
+            <button class="modal-button close-button" id="close-ranking-btn">CERRAR</button>
+        </div>
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>
