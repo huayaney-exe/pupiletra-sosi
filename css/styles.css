@@ -284,6 +284,13 @@ body {
     border-color: var(--game-success);
 }
 
+.grid-cell.hint-highlight {
+    background-color: var(--game-warning);
+    border-color: var(--scotiabank-red);
+    transform: scale(1.1);
+    transition: all 0.2s ease-out;
+}
+
 /* Control Button */
 .control-button {
     width: 100%;

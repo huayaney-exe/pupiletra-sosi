@@ -7,24 +7,21 @@ class StorageManager {
     }
 
     // Calculate score based on game performance
-    calculateScore(wordsFound, timeRemaining, totalWords, hintsUsed) {
+    calculateScore(wordsFound, timeRemaining, totalWords, hintsUsed, streakCount) {
         const baseScore = wordsFound * 100; // 100 points per word
-        const timeBonus = timeRemaining * 10; // 10 points per second remaining
+        const timeBonus = timeRemaining * 15; // 15 points per second remaining
         const completionBonus = (wordsFound === totalWords) ? 500 : 0; // Bonus for completing
         const hintPenalty = hintsUsed * 50; // 50 points penalty per hint
+        const streakBonus = (streakCount > 1) ? (streakCount * 25) : 0; // 25 points extra per word in streak
 
-        return baseScore + timeBonus + completionBonus - hintPenalty;
+        return baseScore + timeBonus + completionBonus - hintPenalty + streakBonus;
     }
 
     // Add a new score to the ranking
-    addScore(playerName, wordsFound, timeRemaining, totalWords, hintsUsed) {
-        const score = this.calculateScore(wordsFound, timeRemaining, totalWords, hintsUsed);
-
+    addScore(playerName, score) {
         const newScore = {
             name: playerName,
             score: score,
-            wordsFound: wordsFound,
-            timeRemaining: timeRemaining,
             date: Date.now()
         };
 

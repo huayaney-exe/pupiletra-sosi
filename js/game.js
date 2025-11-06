@@ -22,6 +22,9 @@ class PupiletraGame {
         this.maxHints = 3;
         this.score = 0;
         this.isDragging = false;
+        this.streakCount = 0;
+        this.lastWordFoundTimestamp = 0;
+        this.STREAK_THRESHOLD = 5000; // 5 seconds for streak
 
         this.storageManager = new StorageManager();
 
@@ -93,8 +96,15 @@ class PupiletraGame {
         this.elements.saveScoreBtn.addEventListener('click', () => this.saveScore());
         this.elements.playAgainBtn.addEventListener('click', () => this.playAgain());
         this.elements.closeRankingBtn.addEventListener('click', () => this.hideRanking());
+        
+        // Mouse events
         this.elements.grid.addEventListener('mouseup', () => this.handleMouseUp());
         this.elements.grid.addEventListener('mouseleave', () => this.handleMouseUp());
+
+        // Touch events
+        this.elements.grid.addEventListener('touchstart', (e) => this.handleTouchStart(e));
+        this.elements.grid.addEventListener('touchmove', (e) => this.handleTouchMove(e));
+        this.elements.grid.addEventListener('touchend', () => this.handleTouchEnd());
 
         // Initialize word list display
         this.renderWordList();
@@ -277,6 +287,38 @@ class PupiletraGame {
         }
     }
 
+    handleTouchStart(event) {
+        if (!this.isGameActive) return;
+        event.preventDefault();
+        
+        const touch = event.touches[0];
+        const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+
+        if (targetElement && targetElement.classList.contains('grid-cell')) {
+            const row = parseInt(targetElement.dataset.row);
+            const col = parseInt(targetElement.dataset.col);
+            this.handleMouseDown(row, col);
+        }
+    }
+
+    handleTouchMove(event) {
+        if (!this.isDragging) return;
+        event.preventDefault();
+
+        const touch = event.touches[0];
+        const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+
+        if (targetElement && targetElement.classList.contains('grid-cell')) {
+            const row = parseInt(targetElement.dataset.row);
+            const col = parseInt(targetElement.dataset.col);
+            this.handleMouseOver(row, col);
+        }
+    }
+
+    handleTouchEnd() {
+        this.handleMouseUp();
+    }
+
     isAdjacent(cell1, cell2) {
         const [r1, c1] = cell1;
         const [r2, c2] = cell2;
@@ -294,6 +336,14 @@ class PupiletraGame {
     }
 
     foundWord(word) {
+        const now = Date.now();
+        if (this.lastWordFoundTimestamp > 0 && (now - this.lastWordFoundTimestamp) < this.STREAK_THRESHOLD) {
+            this.streakCount++;
+        } else {
+            this.streakCount = 1;
+        }
+        this.lastWordFoundTimestamp = now;
+
         this.foundWords.add(word);
 
         // Track which word was found at each cell position
@@ -367,6 +417,18 @@ class PupiletraGame {
 
         const word = remainingWords[Math.floor(Math.random() * remainingWords.length)];
         const wordData = this.wordPositions[word];
+        if (!wordData) return;
+
+        const [startRow, startCol] = wordData.positions[0];
+        const cellElement = this.elements.grid.querySelector(`[data-row='${startRow}'][data-col='${startCol}']`);
+
+        if (cellElement) {
+            cellElement.classList.add('hint-highlight');
+
+            setTimeout(() => {
+                cellElement.classList.remove('hint-highlight');
+            }, 500);
+        }
 
         let direction = 'horizontal';
         if (wordData.direction === 1) direction = 'vertical';
@@ -396,7 +458,8 @@ class PupiletraGame {
             this.foundWords.size,
             this.timeRemaining,
             this.targetWords.length,
-            this.hintsUsed
+            this.hintsUsed,
+            this.streakCount
         );
 
         const funFact = won
@@ -423,10 +486,7 @@ class PupiletraGame {
 
         this.storageManager.addScore(
             playerName,
-            this.foundWords.size,
-            this.timeRemaining,
-            this.targetWords.length,
-            this.hintsUsed
+            this.score
         );
 
         this.elements.resultModal.classList.remove('active');
