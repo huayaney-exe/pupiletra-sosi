@@ -86,10 +86,15 @@ class PupiletraGame {
             rankingModal: document.getElementById('ranking-modal'),
             rankingList: document.getElementById('ranking-list'),
             closeRankingBtn: document.getElementById('close-ranking-btn'),
-            wordListContainer: document.getElementById('word-list-container')
+            wordListContainer: document.getElementById('word-list-container'),
+            streakIndicator: document.getElementById('streak-indicator'),
+            splashScreen: document.getElementById('splash-screen'),
+            startGameBtn: document.getElementById('start-game-btn'),
+            gameContainer: document.querySelector('.game-container')
         };
 
         // Event listeners
+        this.elements.startGameBtn.addEventListener('click', () => this.showGame());
         this.elements.controlBtn.addEventListener('click', () => this.toggleGame());
         this.elements.rankingBtn.addEventListener('click', () => this.showRanking());
         this.elements.hintBtn.addEventListener('click', () => this.useHint());
@@ -106,13 +111,52 @@ class PupiletraGame {
         this.elements.grid.addEventListener('touchmove', (e) => this.handleTouchMove(e));
         this.elements.grid.addEventListener('touchend', () => this.handleTouchEnd());
 
-        // Initialize word list display
-        this.renderWordList();
+        this.createFallingLetters();
+        this.animateTitle();
+    }
+
+    createFallingLetters() {
+        const background = document.getElementById('background-animation');
+        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const numLetters = 50;
+
+        for (let i = 0; i < numLetters; i++) {
+            const letter = document.createElement('span');
+            letter.classList.add('letter');
+            letter.textContent = letters[Math.floor(Math.random() * letters.length)];
+            letter.style.left = `${Math.random() * 100}vw`;
+            letter.style.animationDuration = `${Math.random() * 10 + 10}s`;
+            letter.style.animationDelay = `${Math.random() * 10}s`;
+            letter.style.fontSize = `${Math.random() * 20 + 10}px`;
+            background.appendChild(letter);
+        }
+    }
+
+    animateTitle() {
+        const titleSpans = document.querySelectorAll('.splash-title span');
+        titleSpans.forEach((span, index) => {
+            span.style.animationDelay = `${index * 0.1}s`;
+        });
+    }
+
+    showGame() {
+        this.elements.splashScreen.classList.add('fade-out');
+        
+        this.elements.splashScreen.addEventListener('transitionend', () => {
+            this.elements.splashScreen.style.display = 'none';
+            this.elements.gameContainer.style.display = 'flex';
+            this.elements.gameContainer.classList.add('fade-in');
+            this.startGame();
+        }, { once: true });
     }
 
     toggleGame() {
         if (this.isGameActive) {
             this.resetGame();
+            this.elements.gameContainer.classList.remove('fade-in');
+            this.elements.gameContainer.style.display = 'none';
+            this.elements.splashScreen.style.display = 'flex';
+            this.elements.splashScreen.classList.remove('fade-out');
         } else {
             this.startGame();
         }
@@ -344,6 +388,14 @@ class PupiletraGame {
         }
         this.lastWordFoundTimestamp = now;
 
+        if (this.streakCount > 1) {
+            this.elements.streakIndicator.textContent = `🔥 racha x${this.streakCount}`;
+            
+            this.elements.streakIndicator.classList.remove('show');
+            void this.elements.streakIndicator.offsetWidth; 
+            this.elements.streakIndicator.classList.add('show');
+        }
+
         this.foundWords.add(word);
 
         // Track which word was found at each cell position
@@ -496,7 +548,10 @@ class PupiletraGame {
     playAgain() {
         this.elements.resultModal.classList.remove('active');
         this.resetGame();
-        this.startGame();
+        this.elements.gameContainer.classList.remove('fade-in');
+        this.elements.gameContainer.style.display = 'none';
+        this.elements.splashScreen.style.display = 'flex';
+        this.elements.splashScreen.classList.remove('fade-out');
     }
 
     resetGame() {
@@ -507,12 +562,12 @@ class PupiletraGame {
         this.selectedCells = [];
         this.timeRemaining = 70;
         this.hintsUsed = 0;
-        this.elements.controlBtn.textContent = 'INICIAR JUEGO';
-        this.elements.hintSection.style.display = 'none';
-        this.elements.wordListContainer.style.display = 'none';
+        this.streakCount = 0;
+        this.lastWordFoundTimestamp = 0;
         this.elements.grid.innerHTML = '';
         this.elements.timerDisplay.classList.remove('warning', 'danger');
         this.updateTimerDisplay();
+        this.renderWordList();
     }
 
     showRanking() {

@@ -29,7 +29,75 @@ body {
     justify-content: center;
     align-items: center;
     padding: 20px;
-    overflow: auto;
+    overflow: hidden; /* Hide overflow for animations */
+}
+
+#background-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.letter {
+    position: absolute;
+    color: var(--scotiabank-gray);
+    opacity: 0.5;
+    animation: falling-letter 20s linear infinite;
+}
+
+@keyframes falling-letter {
+    0% {
+        transform: translateY(-10vh);
+        opacity: 0.5;
+    }
+    100% {
+        transform: translateY(110vh);
+        opacity: 0.5;
+    }
+}
+
+#splash-screen {
+    width: 100%;
+    max-width: 900px;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    z-index: 1;
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+#splash-screen.fade-out {
+    opacity: 0;
+    transform: scale(0.9);
+    pointer-events: none;
+}
+
+.splash-title {
+    margin: 24px 0;
+}
+
+.splash-title span {
+    display: inline-block;
+    opacity: 0;
+    animation: drop-in 0.5s forwards;
+}
+
+@keyframes drop-in {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 .game-container {
@@ -44,6 +112,12 @@ body {
     box-shadow: var(--shadow-lg);
     display: flex;
     flex-direction: column;
+    z-index: 1;
+    transition: opacity 0.5s ease-in;
+}
+
+.game-container.fade-in {
+    display: flex;
 }
 
 /* Logo */
@@ -515,6 +589,31 @@ body {
 @keyframes slideIn {
     from { transform: translateY(-20px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
+}
+
+/* Streak Indicator */
+.streak-indicator {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    font-size: 60px;
+    color: #FF9800; /* Warning Orange */
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    opacity: 0;
+    pointer-events: none; /* So it doesn't interfere with clicks */
+    z-index: 1001; /* Above the grid */
+}
+
+.streak-indicator.show {
+    animation: streak-animation 1s ease-in-out;
+}
+
+@keyframes streak-animation {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+    20% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+    80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
 }
 
 /* Footer */

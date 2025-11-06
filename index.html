@@ -7,7 +7,21 @@
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <div class="game-container">
+    <div id="background-animation"></div>
+
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+        <div class="logo-container">
+            <img src="public/Scotiabank_logo.svg.png" alt="Scotiabank" class="scotiabank-logo">
+        </div>
+        <h1 class="game-title splash-title">
+            <span>P</span><span>U</span><span>P</span><span>I</span><span>L</span><span>E</span><span>T</span><span>R</span><span>A</span>
+        </h1>
+        <button class="control-button" id="start-game-btn">INICIAR JUEGO</button>
+    </div>
+
+    <!-- Game Container (initially hidden) -->
+    <div class="game-container" style="display: none;">
         <!-- Logo -->
         <div class="logo-container">
             <img src="public/Scotiabank_logo.svg.png" alt="Scotiabank" class="scotiabank-logo">
@@ -23,6 +37,9 @@
                 <button class="ranking-button" id="ranking-btn">🏆</button>
             </div>
         </header>
+
+        <!-- Streak Indicator -->
+        <div class="streak-indicator" id="streak-indicator">🔥</div>
 
         <!-- Word List -->
         <div class="word-list-container" id="word-list-container">
@@ -45,7 +62,7 @@
         </div>
 
         <!-- Control Button -->
-        <button class="control-button" id="control-btn">INICIAR JUEGO</button>
+        <button class="control-button" id="control-btn">REINICIAR</button>
 
         <!-- Footer -->
         <footer class="game-footer">
