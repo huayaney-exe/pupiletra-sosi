@@ -24,7 +24,7 @@ class PupiletraGame {
         this.isDragging = false;
         this.streakCount = 0;
         this.lastWordFoundTimestamp = 0;
-        this.STREAK_THRESHOLD = 5000; // 5 seconds for streak
+        this.STREAK_THRESHOLD = 10000; // 10 seconds for streak
 
         this.storageManager = new StorageManager();
 
@@ -115,6 +115,11 @@ class PupiletraGame {
         this.animateTitle();
     }
 
+    resetStreak() {
+        this.streakCount = 0;
+        this.lastWordFoundTimestamp = 0;
+    }
+
     createFallingLetters() {
         const background = document.getElementById('background-animation');
         const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -173,6 +178,7 @@ class PupiletraGame {
         this.isGameActive = true;
         this.hintsUsed = 0;
         this.score = 0;
+        this.resetStreak(); // Ensure streak is reset at the start of a game
 
         this.elements.controlBtn.textContent = 'REINICIAR';
         this.elements.hintSection.style.display = 'block';
@@ -327,6 +333,7 @@ class PupiletraGame {
         const startCell = this.selectedCells[0];
         const endCell = this.selectedCells[this.selectedCells.length - 1];
         const idealLine = this.getIdealLine(startCell, endCell);
+        let wordFound = false;
 
         if (idealLine.length > 0) {
             const word = idealLine.map(([r, c]) => this.grid[r][c]).join('');
@@ -334,9 +341,15 @@ class PupiletraGame {
 
             if (this.targetWords.includes(word) && !this.foundWords.has(word)) {
                 this.foundWord(word, idealLine);
+                wordFound = true;
             } else if (this.targetWords.includes(reversedWord) && !this.foundWords.has(reversedWord)) {
                 this.foundWord(reversedWord, idealLine);
+                wordFound = true;
             }
+        }
+
+        if (!wordFound) {
+            this.resetStreak();
         }
 
         this.isDragging = false;
