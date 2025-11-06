@@ -307,14 +307,9 @@ class PupiletraGame {
     handleMouseOver(row, col) {
         if (!this.isDragging) return;
 
-        const lastCell = this.selectedCells[this.selectedCells.length - 1];
-        if (!this.isAdjacent(lastCell, [row, col])) {
-            return;
-        }
-
-        const alreadySelected = this.selectedCells.some(([r, c]) => r === row && c === col);
-        if (alreadySelected) {
-            return;
+        const lastCell = this.selectedCells.length > 0 ? this.selectedCells[this.selectedCells.length - 1] : null;
+        if (lastCell && lastCell[0] === row && lastCell[1] === col) {
+            return; // Avoid adding the same cell multiple times
         }
 
         this.selectedCells.push([row, col]);
@@ -322,64 +317,63 @@ class PupiletraGame {
     }
 
     handleMouseUp() {
-        if (!this.isDragging) return;
-
-        this.isDragging = false;
-        if (!this.checkWord()) {
+        if (!this.isDragging || this.selectedCells.length < 2) {
             this.selectedCells = [];
             this.updateGridDisplay();
+            this.isDragging = false;
+            return;
         }
-    }
 
-    handleTouchStart(event) {
-        if (!this.isGameActive) return;
-        event.preventDefault();
-        
-        const touch = event.touches[0];
-        const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+        const startCell = this.selectedCells[0];
+        const endCell = this.selectedCells[this.selectedCells.length - 1];
+        const idealLine = this.getIdealLine(startCell, endCell);
 
-        if (targetElement && targetElement.classList.contains('grid-cell')) {
-            const row = parseInt(targetElement.dataset.row);
-            const col = parseInt(targetElement.dataset.col);
-            this.handleMouseDown(row, col);
+        if (idealLine.length > 0) {
+            const word = idealLine.map(([r, c]) => this.grid[r][c]).join('');
+            const reversedWord = word.split('').reverse().join('');
+
+            if (this.targetWords.includes(word) && !this.foundWords.has(word)) {
+                this.foundWord(word, idealLine);
+            } else if (this.targetWords.includes(reversedWord) && !this.foundWords.has(reversedWord)) {
+                this.foundWord(reversedWord, idealLine);
+            }
         }
+
+        this.isDragging = false;
+        this.selectedCells = [];
+        this.updateGridDisplay();
     }
 
-    handleTouchMove(event) {
-        if (!this.isDragging) return;
-        event.preventDefault();
+    getIdealLine(startCell, endCell) {
+        const [r1, c1] = startCell;
+        const [r2, c2] = endCell;
+        const line = [];
 
-        const touch = event.touches[0];
-        const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+        const dr = r2 - r1;
+        const dc = c2 - c1;
 
-        if (targetElement && targetElement.classList.contains('grid-cell')) {
-            const row = parseInt(targetElement.dataset.row);
-            const col = parseInt(targetElement.dataset.col);
-            this.handleMouseOver(row, col);
+        const isHorizontal = dr === 0;
+        const isVertical = dc === 0;
+        const isDiagonal = Math.abs(dr) === Math.abs(dc);
+
+        if (!isHorizontal && !isVertical && !isDiagonal) {
+            return []; // Not a valid line
         }
-    }
 
-    handleTouchEnd() {
-        this.handleMouseUp();
-    }
+        const len = Math.max(Math.abs(dr), Math.abs(dc)) + 1;
+        const stepR = dr / (len - 1);
+        const stepC = dc / (len - 1);
 
-    isAdjacent(cell1, cell2) {
-        const [r1, c1] = cell1;
-        const [r2, c2] = cell2;
-        return Math.abs(r1 - r2) <= 1 && Math.abs(c1 - c2) <= 1 && !(r1 === r2 && c1 === c2);
-    }
-
-    checkWord() {
-        const word = this.selectedCells.map(([r, c]) => this.grid[r][c]).join('');
-
-        if (this.targetWords.includes(word) && !this.foundWords.has(word)) {
-            this.foundWord(word);
-            return true;
+        for (let i = 0; i < len; i++) {
+            const r = r1 + (stepR * i);
+            const c = c1 + (stepC * i);
+            line.push([r, c]);
         }
-        return false;
+
+        return line;
     }
 
-    foundWord(word) {
+    foundWord(word, cells) {
         const now = Date.now();
         if (this.lastWordFoundTimestamp > 0 && (now - this.lastWordFoundTimestamp) < this.STREAK_THRESHOLD) {
             this.streakCount++;
@@ -399,7 +393,7 @@ class PupiletraGame {
         this.foundWords.add(word);
 
         // Track which word was found at each cell position
-        this.selectedCells.forEach(([r, c]) => {
+        cells.forEach(([r, c]) => {
             const cellKey = `${r},${c}`;
 
             // Initialize Set if this is the first word found at this cell
