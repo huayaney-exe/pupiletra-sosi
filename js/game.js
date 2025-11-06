@@ -21,7 +21,7 @@ class PupiletraGame {
         this.hintsUsed = 0;
         this.maxHints = 3;
         this.score = 0;
-        this.checkWordTimeout = null; // Debounce timer for word checking
+        this.isDragging = false;
 
         this.storageManager = new StorageManager();
 
@@ -93,6 +93,8 @@ class PupiletraGame {
         this.elements.saveScoreBtn.addEventListener('click', () => this.saveScore());
         this.elements.playAgainBtn.addEventListener('click', () => this.playAgain());
         this.elements.closeRankingBtn.addEventListener('click', () => this.hideRanking());
+        this.elements.grid.addEventListener('mouseup', () => this.handleMouseUp());
+        this.elements.grid.addEventListener('mouseleave', () => this.handleMouseUp());
 
         // Initialize word list display
         this.renderWordList();
@@ -205,7 +207,8 @@ class PupiletraGame {
                 cell.dataset.row = i;
                 cell.dataset.col = j;
 
-                cell.addEventListener('click', () => this.selectCell(i, j));
+                cell.addEventListener('mousedown', () => this.handleMouseDown(i, j));
+                cell.addEventListener('mouseover', () => this.handleMouseOver(i, j));
 
                 this.elements.grid.appendChild(cell);
             }
@@ -239,60 +242,38 @@ class PupiletraGame {
         return wordsAtCell;
     }
 
-    selectCell(row, col) {
+    handleMouseDown(row, col) {
         if (!this.isGameActive) return;
 
-        const cellKey = `${row},${col}`;
+        this.isDragging = true;
+        this.selectedCells = [[row, col]];
+        this.updateGridDisplay();
+    }
 
-        // Check if ALL words at this cell have been found
-        // Allow selection if there are still unfound words passing through this cell
-        if (this.foundCells.has(cellKey)) {
-            const wordsAtCell = this.getCellWords(row, col);
-            const foundWordsAtCell = this.foundCells.get(cellKey);
+    handleMouseOver(row, col) {
+        if (!this.isDragging) return;
 
-            // If all words at this position are found, block selection
-            const allWordsFound = wordsAtCell.every(word => foundWordsAtCell.has(word));
-            if (allWordsFound) return;
-        }
-
-        // If this is the first cell, just select it
-        if (this.selectedCells.length === 0) {
-            this.selectedCells.push([row, col]);
-            this.updateGridDisplay();
-            return;
-        }
-
-        // Check if adjacent to last selected cell
         const lastCell = this.selectedCells[this.selectedCells.length - 1];
         if (!this.isAdjacent(lastCell, [row, col])) {
-            // Start new selection
-            this.selectedCells = [[row, col]];
-            this.updateGridDisplay();
             return;
         }
 
-        // Check if cell already selected (prevent duplicates)
         const alreadySelected = this.selectedCells.some(([r, c]) => r === row && c === col);
         if (alreadySelected) {
-            return; // User clicked same cell, ignore
+            return;
         }
 
-        // Add to selection
         this.selectedCells.push([row, col]);
         this.updateGridDisplay();
+    }
 
-        // Debounced word check: wait 150ms after last click to allow rapid selection
-        if (this.selectedCells.length >= 4) {
-            // Cancel previous check
-            if (this.checkWordTimeout) {
-                clearTimeout(this.checkWordTimeout);
-            }
+    handleMouseUp() {
+        if (!this.isDragging) return;
 
-            // Schedule check after user stops clicking
-            this.checkWordTimeout = setTimeout(() => {
-                this.checkWord();
-                this.checkWordTimeout = null;
-            }, 150);
+        this.isDragging = false;
+        if (!this.checkWord()) {
+            this.selectedCells = [];
+            this.updateGridDisplay();
         }
     }
 
@@ -307,7 +288,9 @@ class PupiletraGame {
 
         if (this.targetWords.includes(word) && !this.foundWords.has(word)) {
             this.foundWord(word);
+            return true;
         }
+        return false;
     }
 
     foundWord(word) {
